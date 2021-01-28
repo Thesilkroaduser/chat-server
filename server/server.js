@@ -6,14 +6,19 @@ const io = require('socket.io')(http, {
   }
 });
 
+const history = new Array();
+
 http.listen(4000, () => {
   console.log('Server started at port:4000...');
 });
 
 io.on('connection', (socket) => {
-  console.log(socket.id);
-  socket.on('hello', (data) => {
-    console.log(data)
-    socket.emit('message', 'from server');});
+  console.log('New User Connected');
+  socket.on('get_history', () => {
+    socket.emit('send_message', history);
+  });
+  socket.on('new_message', (data) => {
+    history.push(data);
+    io.sockets.emit('send_message', history);
+  });
 });
-
